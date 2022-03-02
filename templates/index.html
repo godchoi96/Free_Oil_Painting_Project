@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="kr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>무료 유화제작 사이트</title>
+
+    <script>
+        var before_paint = "{% static 'images/base/img23.jpg' %}"
+        var after_paint = "{% static 'images/base/img24.jpg' %}"
+        var transition = "{% static 'images/transition/perlin_noise.png' %}"
+    </script>
+
+    <!--#region main  Scripts Area -->
+
+    <!-- Script reading order 
+        1. three js
+        2. gsap js
+        3. hover-effect js
+        4. app js
+    -->
+
+    <!-- three js 스크립트 -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+        integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- gsap js 스크립트 -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
+        integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    {% block extrahead %}
+
+    <!-- hover-effect js script -->
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <script defer src="{% static 'js/hover-effect.umd.js' %}"></script>
+
+    <!-- app js script -->
+
+    <script defer src="{% static 'js/app.js' %}"></script>
+
+    {% endblock %}
+
+    <!--#endregion -->
+
+    <script>
+        // {#ajax의 post 방식에선 csrf를 아래와 같이 선언해주면 된다.#}
+        $.ajaxSetup({
+            headers: { "X-CSRFToken": '{{csrf_token}}' }
+        });
+
+
+        function save() {
+            const file = $('#file')[0].files[0]
+            const form_data = new FormData()
+            form_data.append('file', file)
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://127.0.0.1:5000/',
+                data: form_data,
+                processData: false,
+                contentType: false,
+                enctype: 'multipart/form-data',
+                success: function (response) {
+                    let result = response["result"]
+
+                    let temp_html = `<img src="${result}" width="100%"; height="100%";/>`
+
+                    $('#test-box').append(temp_html)
+                },
+            });
+        }
+    </script>
+
+</head>
+
+<body>
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <div class="first-slide sections">
+                    <span>해드림!</span>
+                    <!-- ***** 로고 제작이 된다면 이 곳에 넣고 수정하면 됩니다. ***** -->
+                    <!-- <img src="/" alt="로고" /> -->
+                    <span>유화 제작을 무료로 해드립니다! <strong>(광고주의)</strong></span>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="second-slide">
+                    <div class="second-slide-span">
+                        <span>이미지를 명화처럼 바꿔드립니다!</span>
+                        <span>우측의 이미지에 포인터를 가져가면 예시를 확인할 수 있습니다.</span>
+                    </div>
+                    <div class="img">
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="third-slide sections">
+                    <span>한 번 바꿔보세요!</span>
+                    <p>아래 <strong>파일 선택</strong>을 하여 이미지를 놓아주세요.</p>
+
+                    <div class="group">
+                        <div class="before-machine">
+                            <img style="width: 25vw; height: 25vw; border-radius: 20px; border: 2px solid black; margin-bottom: 20px;"
+                                id="preview-image" src="{% static 'images/base/preview.png' %}">
+                        </div>
+                        <button class="btnClick" onclick="save(); this.disabled=true;"
+                            style="background: #1C1C1C; margin-left: 12px; color: #fff; border-color: #1C1C1C;">>>></button>
+
+                        <!-- ***** 이 부분은 테스트 용도로 작업의 결과물이 올라갈 공간입니다. ***** -->
+                        <div class="test-box" id="test-box"
+                            style="width: 25vw; height: 25vw; border-radius: 20px; border: 2px solid black; margin-bottom: 20px;">
+                        </div>
+                    </div>
+                    <div class="file-upload">
+                        <div id="image_container">
+                        </div>
+                        <label for="file" style="font-weight: bold; color:#fff;">사진 올리기</label>
+                        <input type="file" id="file" accept="image/*" onchange="setThumbnail(this);"
+                            style="display: none;" />
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="fourth-slide">
+                    <span>더 많은 유화제작을 이용하고 싶으신가요?</span>
+                    <div class="test-banner">
+                        <a href="https://rookieno.tistory.com/" target="_blank"><img
+                                src="{% static 'images/base/rookie.png' %}" alt="노광민"></a>
+                        <a href="https://ch-oi-story.tistory.com/" target="_blank"><img
+                                src="{% static 'images/base/jambo.png' %}" alt="최승대"></a>
+                        <a href="https://hive-mind.tistory.com/" target="_blank"><img
+                                src="{% static 'images/base/bad_adver1.png' %}" alt="조시욱"></a>
+                    </div>
+                    <p>본 사이트는 <strong>스파르타 팀</strong>과 함께 합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="swiper-pagination"></div>
+
+    <script src="{% static 'js/file.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/file_sub.js' %}"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="{% static 'js/file_sub.js' %}"></script>
+</body>
+
+</html>
